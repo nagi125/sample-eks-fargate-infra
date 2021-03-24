@@ -5,10 +5,16 @@ provider "aws" {
 
 variable "app_name" {
   type = string
-  default = "cms-laravel-eks"
+  default = "sample"
 }
 
 variable "azs" {
   type = list(string)
   default = ["ap-northeast-1a", "ap-northeast-1c", "ap-northeast-1d"]
+}
+
+module "network" {
+  source   = "./network"
+  app_name = var.app_name
+  azs      = var.azs
 }
