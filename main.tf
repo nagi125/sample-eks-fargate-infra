@@ -14,11 +14,11 @@ variable "azs" {
 }
 
 module "network" {
-  source   = "./network"
+  source   = "./modules/network"
   app_name = var.app_name
   azs      = var.azs
 }
 
 module "iam" {
-  source = "./iam"
+  source = "./modules/iam"
 }
