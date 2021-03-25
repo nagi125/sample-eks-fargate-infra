@@ -26,7 +26,6 @@ resource "aws_vpc" "main" {
 
   tags = {
     Name = var.app_name
-    "kubernetes.io/cluster/${terraform.workspace}" = "shared"
   }
 }
 
@@ -42,6 +41,7 @@ resource "aws_subnet" "publics" {
   tags = {
     Name = "${var.app_name}-public-${count.index}"
     "kubernetes.io/role/elb" = 1
+    "kubernetes.io/cluster/sample" = "shared"
   }
 }
 
@@ -57,7 +57,90 @@ resource "aws_subnet" "privates" {
   tags = {
     Name = "${var.app_name}-private-${count.index}"
     "kubernetes.io/role/internal-elb" = 1
+    "kubernetes.io/cluster/sample" = "shared"
   }
+}
+
+# IGW
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = var.app_name
+  }
+}
+
+# NAT(EIP)
+resource "aws_eip" "nat" {
+  vpc = true
+
+  tags = {
+    Name = "${var.app_name}-natgw"
+  }
+}
+
+# NAT(GW)
+resource "aws_nat_gateway" "main" {
+
+  subnet_id = aws_subnet.publics.0.id
+  allocation_id = aws_eip.nat.id
+
+  tags = {
+    Name = "${var.app_name}"
+  }
+}
+
+# RouteTable(Public)
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.app_name}-public"
+  }
+}
+
+# Route(Public)
+resource "aws_route" "public" {
+  destination_cidr_block = "0.0.0.0/0"
+  route_table_id = aws_route_table.public.id
+  gateway_id = aws_internet_gateway.main.id
+}
+
+# RouteTableAssociation(Public)
+resource "aws_route_table_association" "public" {
+  count = length(var.public_subnet_cidrs)
+
+  subnet_id = element(aws_subnet.publics.*.id, count.index)
+  route_table_id = aws_route_table.public.id
+}
+
+# RouteTable(Private)
+resource "aws_route_table" "privates" {
+  count = length(var.private_subnet_cidrs)
+
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.app_name}-private-${count.index}"
+  }
+}
+
+# Route(Private)
+resource "aws_route" "privates" {
+  count = length(var.private_subnet_cidrs)
+
+  destination_cidr_block = "0.0.0.0/0"
+
+  route_table_id = element(aws_route_table.privates.*.id, count.index)
+  nat_gateway_id = aws_nat_gateway.main.id
+}
+
+# RouteTableAssociation(Privates)
+resource "aws_route_table_association" "privates" {
+  count = length(var.private_subnet_cidrs)
+
+  subnet_id = element(aws_subnet.privates.*.id, count.index)
+  route_table_id = element(aws_route_table.privates.*.id, count.index)
 }
 
 output "vpc_id" {
