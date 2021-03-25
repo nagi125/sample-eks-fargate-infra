@@ -1,0 +1,31 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: sample
+  region: ap-northeast-1
+  version: "1.18"
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+    - metadata:
+        name: aws-load-balancer-controller
+        namespace: kube-system
+      attachPolicyARNs:
+        - "arn:aws:iam::xxx:policy/AWSLoadBalancerControllerIAMPolicy"
+
+vpc:
+  subnets:
+    public:
+      ap-northeast-1a: { id: subnet-xxx1 }
+      ap-northeast-1c: { id: subnet-xxx2 }
+      ap-northeast-1d: { id: subnet-xxx3 }
+    private:
+      ap-northeast-1a: { id: subnet-xxx4 }
+      ap-northeast-1c: { id: subnet-xxx5 }
+      ap-northeast-1d: { id: subnet-xxx6 }
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
