@@ -28,7 +28,7 @@ $ eksctl create cluster -f ./eksctl/cluster.yaml
 
 ### FargateProfileの作成
 ```
-$ eksctl create fargateprofile  -f eksctl/fargateprofile.yaml
+$ eksctl create fargateprofile -f ./eksctl/fargateprofile.yaml
 ```
 
 ### AWSLoadBalancerControllerの作成
