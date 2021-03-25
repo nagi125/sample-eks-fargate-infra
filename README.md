@@ -63,3 +63,6 @@ $ brew install kubectl
 ```
 $ brew install helm
 ```
+
+### ALBのannotations一覧
+https://kubernetes-sigs.github.io/aws-load-balancer-controller/guide/ingress/annotations/
