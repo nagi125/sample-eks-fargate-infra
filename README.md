@@ -52,3 +52,14 @@ $ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 ```
 $ kubectl apply -f deployment/sample.yaml
 ```
+
+## その他
+### Kubectlのinstall
+```
+$ brew install kubectl
+```
+
+### Helmのinstall
+```
+$ brew install helm
+```
