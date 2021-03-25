@@ -1,7 +1,7 @@
-# sample-eks-infra
+# sample-eks-fargate-infra
 ## 概要
 EKS on FargateのサンプルAppです。  
-ネットワークをTerraformで管理し、EKSの作成はekstclを使います。
+ネットワークをTerraformで管理し、EKSの作成はeksctlを使います。
 
 ## Deploy手順
 ### Terraform環境立ち上げ
@@ -19,7 +19,7 @@ $ dokcer-compose exec terraform /bin/ash
 ```
 
 ### EKS作成
-eksctlディレクトリ内にあるyamlファイルに作られた値を入力する
+eksctlディレクトリ内にあるyamlに作られた値を入力した後に下記のコマンドでクラスターを作成する
 
 ### EKSClusterの作成
 ```
